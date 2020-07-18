@@ -5,6 +5,38 @@ if (typeof AFRAME === 'undefined') {
 }
 
 /**
+ * Lounge entry point component, usually for the camera rig
+ * Sets position of entity to that of the entry point in a lounge,
+ * usually on the floor.
+ */
+AFRAME.registerComponent('lounge-entry-point', {
+  schema: {
+    loungeId: {type: 'string', default: 'lounge'},
+  },
+
+  /**
+   * Set if component needs multiple instancing.
+   */
+  multiple: false,
+
+  /**
+   * Called once when component is attached. Generally for initial setup.
+   */
+  init: function () {
+    console.log("lounge-floor-locate component (init)");
+    let lounge = document.getElementById(this.data.loungeId);
+    let point = lounge.components.lounge.entry_point();
+    let pointLocal = this.el.object3D.worldToLocal(point);
+    this.el.object3D.position.copy(pointLocal);
+  },
+
+  update: function (oldData) {
+  },
+
+  remove: function () { }
+});
+
+/**
  * Floor component for the Lounge
  */
 AFRAME.registerComponent('lounge-floor', {
@@ -137,6 +169,8 @@ AFRAME.registerComponent('lounge', {
     depth: {type: 'number', default: 7},
     floorColor: {type: 'color', default: '#808080'},
     wallColor: {type: 'color', default: '#aaa4a4'},
+    ceiling: {type: 'boolean', default: true},
+    entryPoint: {type: 'vec3', default: {}},
   },
 
   /**
@@ -156,37 +190,33 @@ AFRAME.registerComponent('lounge', {
       'depth': this.data.depth,
       'position': {x: 0, y: -this.data.height/2, z: 0}
     });
-    this.el.appendChild(this.lounge);
-    this.lounge.setAttribute('lounge-wall__north', {
-      'color': this.data.wallColor,
-      'width': this.data.width,
-      'height': this.data.height,
-      'position': {x: 0, y: 0, z: -this.data.depth/2}
-    });
-    this.lounge.setAttribute('lounge-wall__east', {
-      'color': this.data.wallColor,
-      'width': this.data.depth,
-      'height': this.data.height,
-      'position': {x: this.data.width/2, y: 0, z: 0}
-    });
-    this.lounge.setAttribute('lounge-wall__south', {
-      'color': this.data.wallColor,
-      'width': this.data.width,
-      'height': this.data.height,
-      'position': {x: 0, y: 0, z: this.data.depth/2}
-    });
-    this.lounge.setAttribute('lounge-wall__west', {
-      'color': this.data.wallColor,
-      'width': this.data.depth,
-      'height': this.data.height,
-      'position': {x: -this.data.width/2, y: 0, z: 0}
-    });
-    this.lounge.setAttribute('lounge-ceiling', {
-      'color': this.data.ceilingColor,
-      'width': this.data.width,
-      'depth': this.data.depth,
-      'position': {x: 0, y: this.data.height/2, z: 0}
-    });
+    let walls = {
+      'north': {posX: 0, posZ: -this.data.depth/2,
+        width: this.data.width},
+      'east': {posX: this.data.width/2, posZ: 0,
+        width: this.data.depth},
+      'south': {posX: 0, posZ: this.data.depth/2,
+        width: this.data.width},
+      'west': {posX: -this.data.width/2, posZ: 0,
+        width: this.data.depth},
+    };
+    for (const facing in walls) {
+      const wall = walls[facing];
+      this.lounge.setAttribute('lounge-wall__' + facing, {
+        'color': this.data.wallColor,
+        'width': wall.width,
+        'height': this.data.height,
+        'position': {x: wall.posX, y: 0, z: wall.posZ}
+      });
+    };
+    if (this.data.ceiling) {
+      this.lounge.setAttribute('lounge-ceiling', {
+        'color': this.data.ceilingColor,
+        'width': this.data.width,
+        'depth': this.data.depth,
+        'position': {x: 0, y: this.data.height/2, z: 0}
+      });
+    };
     this.el.appendChild(this.lounge);
   },
 
@@ -225,5 +255,22 @@ AFRAME.registerComponent('lounge', {
    */
   events: {
     // click: function (evt) { }
-  }
+  },
+
+  /**
+   * Give a position located in the floor (in world coordinates)
+   * that can act as an entry point for the room.
+   */
+  entry_point() {
+    var point;
+    if (Object.keys(this.data.entryPoint).length == 0) {
+      point = new THREE.Vector3(0, -this.data.height/2, this.data.depth/4);
+    } else {
+      point = new THREE.Vector3(this.data.entryPoint.x,
+                                this.data.entryPoint.y,
+                                this.data.entryPoint.z);
+    };
+    this.el.object3D.updateMatrixWorld()
+    return this.el.object3D.localToWorld(point);
+  },
 });
