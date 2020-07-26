@@ -47,3 +47,6 @@ Then require and use.
 require('aframe');
 require('aframe-lounge-component');
 ```
+## Credits
+### Textures
+* [Floor-lounge texture](https://www.flickr.com/photos/seier/4342331255), by seier+seier in Flickr (license: CC by 2.0).
