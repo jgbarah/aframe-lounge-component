@@ -5,6 +5,113 @@ if (typeof AFRAME === 'undefined') {
 }
 
 /**
+ * Lounge plinth, to set up stuff in the lounge.
+ */
+AFRAME.registerComponent('lounge-plinth', {
+  schema: {
+    width: {type: 'number', default: 1},
+    depth: {type: 'number', default: 1},
+    height: {type: 'number', default: .5},
+    color: {type: 'color', default: '#404040'},
+  },
+
+  /**
+   * Set if component needs multiple instancing.
+   */
+  multiple: false,
+
+  /**
+   * Called once when component is attached. Generally for initial setup.
+   */
+  init: function () {
+    let el = this.el;
+    let data = this.data;
+
+    console.log("lounge-plinth (init)");
+    this.el.setAttribute('geometry', {
+      'primitive': 'box',
+      'width': this.data.width,
+      'depth': this.data.depth,
+      'height': this.data.height
+    });
+    this.el.setAttribute('material', {'color': this.data.color});
+    this.el.addEventListener("staydown", function (event) {
+      // When "staydown" received, set position to to be on floor
+      let localPosition = el.object3D.worldToLocal(event.detail.worldPosition);
+      el.object3D.position.y = localPosition.y + data.height/2;
+    });
+  },
+
+  update: function (oldData) {
+  },
+
+  remove: function () { }
+});
+
+/**
+ * Lounge staydown component, making the entity, if in a lounge,
+   to "fall down" to the floor.
+ */
+AFRAME.registerComponent('lounge-staydown', {
+  schema: {
+  },
+
+  /**
+   * Set if component needs multiple instancing.
+   */
+  multiple: false,
+
+  /**
+   * Emit an event with floor position
+   */
+  floor_level: function(position) {
+    localPosition = new THREE.Vector3(position.x,
+                                      position.y,
+                                      position.z);
+    this.el.object3D.updateMatrixWorld();
+    this.el.emit('staydown',
+                 {worldPosition: this.el.object3D.localToWorld(localPosition)},
+                 false);
+  },
+
+  /**
+   * Called once when component is attached. Generally for initial setup.
+   */
+  init: function () {
+    console.log("lounge-staydown component (init)");
+    let floor_level = this.floor_level.bind(this);
+    let el = this.el;
+
+    // Find entity with lounge component
+    let ancestor = el;
+    while ((ancestor = ancestor.parentNode) && !("lounge" in ancestor.attributes));
+    let loungeEntity = ancestor;
+    loungeEntity.addEventListener("loaded", function () {
+      // When the entity with lounge is loaded, find floor level
+      let floorEntity = loungeEntity.querySelector("a-entity[lounge-floor]")
+      let floorComponent = floorEntity.components["lounge-floor"];
+      if ('data' in floorComponent) {
+        // floorComponent already initialized
+        floor_level(floorComponent.data.position);
+      } else {
+        // floorComponent not initialized yet, set a listener
+        floorEntity.addEventListener("componentinitialized", function(event) {
+          if (event.detail.name == "lounge-floor") {
+            floor_level(floorComponent.data.position);
+          };
+        });
+      };
+    });
+  },
+
+  update: function (oldData) {
+  },
+
+  remove: function () { }
+});
+
+
+/**
  * Lounge entry point component, usually for the camera rig
  * Sets position of entity to that of the entry point in a lounge,
  * usually on the floor.
