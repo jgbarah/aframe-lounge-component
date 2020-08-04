@@ -281,6 +281,7 @@ AFRAME.registerComponent('lounge', {
     height: {type: 'number', default: 4},
     depth: {type: 'number', default: 7},
     floorColor: {type: 'color', default: '#808080'},
+    floorTexture: {type: 'asset'},
     wallColor: {type: 'color', default: '#aaa4a4'},
     ceiling: {type: 'boolean', default: true},
     entryPoint: {type: 'vec3', default: {}},
@@ -299,6 +300,7 @@ AFRAME.registerComponent('lounge', {
     this.lounge = document.createElement('a-entity');
     this.lounge.setAttribute('lounge-floor', {
       'color': this.data.floorColor,
+      'texture': this.data.floorTexture,
       'width': this.data.width,
       'depth': this.data.depth,
       'position': {x: 0, y: -this.data.height/2, z: 0}
