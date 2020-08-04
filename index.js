@@ -115,6 +115,7 @@ AFRAME.registerComponent('lounge-staydown', {
  * Lounge entry point component, usually for the camera rig
  * Sets position of entity to that of the entry point in a lounge,
  * usually on the floor.
+ * If loungeId is not found, find the first lounge in the scene.
  */
 AFRAME.registerComponent('lounge-entry-point', {
   schema: {
@@ -130,8 +131,11 @@ AFRAME.registerComponent('lounge-entry-point', {
    * Called once when component is attached. Generally for initial setup.
    */
   init: function () {
-    console.log("lounge-floor-locate component (init)");
+    console.log("lounge-entry-point component (init)");
     let lounge = document.getElementById(this.data.loungeId);
+    if (lounge == null) {
+      lounge = document.querySelector("a-entity[lounge]");
+    };
     let point = lounge.components.lounge.entry_point();
     let pointLocal = this.el.object3D.worldToLocal(point);
     this.el.object3D.position.copy(pointLocal);
