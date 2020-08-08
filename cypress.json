@@ -1,0 +1,7 @@
+{
+  "baseUrl": "https://localhost:5000",
+  "integrationFolder": "tests",
+  "testFiles": "**/*.js",
+  "videosFolder": "tests/videos",
+  "screenshotsFolder": "tests/screenshots"
+}

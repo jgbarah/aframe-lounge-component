@@ -13,9 +13,10 @@
     "prepublish": "npm run dist",
     "ghpages": "ghpages",
     "start": "webpack-dev-server --host 0.0.0.0 --progress --colors --hot-only --inline --port 5000 --https",
-    "test": "karma start ./tests/karma.conf.js",
-    "test:firefox": "karma start ./tests/karma.conf.js --browsers Firefox",
-    "test:chrome": "karma start ./tests/karma.conf.js --browsers Chrome"
+    "test": "cypress run",
+    "devtest": "cypress open",
+    "test:firefox": "cypress run --browser firefox:dev",
+    "test:chrome": "cypress run --browser chrome"
   },
   "repository": {
     "type": "git",
@@ -97,5 +98,8 @@
       "examples/build.js",
       "dist/**"
     ]
+  },
+  "devDependencies": {
+    "cypress": "^4.12.0"
   }
 }
