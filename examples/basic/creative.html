@@ -12,7 +12,24 @@
     <a-scene antialias: true; logarithmicDepthBuffer: true; colorManagement: true; sortObjects: true;>
       <a-entity id="lounge" position="5 0 0"
                 lounge="width: 20; depth: 30; height: 10; ceiling: false;">
-        <a-entity lounge-plinth lounge-staydown></a-entity>
+        <a-entity position="-4 0 2" lounge-plinth="width: 2; depth: 2" lounge-staydown>
+          <a-box position="0 1 0" color="red"
+                 animation="property: object3D.rotation.y; to: 360; dur: 5000;
+                            loop: true; easing: linear"></a-box>
+        </a-entity>
+
+        <a-entity position="4 0 2" lounge-plinth="width: 2; depth: 2" lounge-staydown>
+          <a-box position="0 1 0" color="blue"
+                 animation="property: object3D.rotation.y; to: 360; dur: 5000;
+                            loop: true; easing: linear"></a-box>
+        </a-entity>
+
+        <a-entity position="0 0 -7" lounge-plinth="width: 2; depth: 2" lounge-staydown>
+          <a-box position="0 1 0" color="yellow"
+                 animation="property: object3D.rotation.y; to: 360; dur: 5000;
+                            loop: true; easing: linear"></a-box>
+        </a-entity>
+
       </a-entity>
 
       <a-entity lounge-entry-point>

@@ -131,14 +131,19 @@ AFRAME.registerComponent('lounge-entry-point', {
    * Called once when component is attached. Generally for initial setup.
    */
   init: function () {
+    let el = this.el;
     console.log("lounge-entry-point component (init)");
     let lounge = document.getElementById(this.data.loungeId);
     if (lounge == null) {
       lounge = document.querySelector("a-entity[lounge]");
     };
-    let point = lounge.components.lounge.entry_point();
-    let pointLocal = this.el.object3D.worldToLocal(point);
-    this.el.object3D.position.copy(pointLocal);
+    lounge.addEventListener("componentinitialized", function(event) {
+      if (event.detail.name == "lounge") {
+        let point = lounge.components.lounge.entry_point();
+        let pointLocal = el.object3D.worldToLocal(point);
+        el.object3D.position.copy(pointLocal);
+      };
+    });
   },
 
   update: function (oldData) {
