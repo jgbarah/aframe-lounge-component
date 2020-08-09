@@ -11,7 +11,8 @@
   <body>
     <a-scene antialias: true; logarithmicDepthBuffer: true; colorManagement: true; sortObjects: true;>
       <a-entity id="lounge" position="5 0 0"
-                lounge="width: 20; depth: 30; height: 10; ceiling: false;">
+                lounge="width: 20; depth: 30; height: 10; ceiling: false;
+                        floorTexture: ../../assets/floor-texture.jpg">
         <a-entity position="-4 0 2" lounge-plinth="width: 2; depth: 2" lounge-staydown>
           <a-box position="0 1 0" color="red"
                  animation="property: object3D.rotation.y; to: 360; dur: 5000;

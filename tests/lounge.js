@@ -68,7 +68,7 @@ describe('Lounge component examples (creative)', () => {
   });
 
   it('Screenshot', () => {
-    cy.wait(1000);
+    cy.wait(2000);
     cy.screenshot('creative');
   });
 
