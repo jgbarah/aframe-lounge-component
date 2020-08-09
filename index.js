@@ -159,8 +159,8 @@ AFRAME.registerComponent('lounge-floor', {
   schema: {
     width: {type: 'number', default: 10},
     depth: {type: 'number', default: 7},
-    color: {type: 'color'},
-    texture: {type: 'asset'},
+    color: {type: 'color', default: ''},
+    texture: {type: 'asset', default: ''},
     position: {type: 'vec3', default: {x: 0, y: 0, z: 0}}
   },
 
@@ -176,6 +176,9 @@ AFRAME.registerComponent('lounge-floor', {
     console.log("lounge-floor component (init)");
     this.floor = document.createElement('a-plane');
     this.floor.setAttribute('class', 'lounge-floor');
+    if (this.data.color == '' && this.data.texture == '') {
+      this.data.color = '#808080';
+    };
     this.floor.setAttribute('color', this.data.color);
     this.floor.setAttribute('src', this.data.texture);
     this.floor.setAttribute('width', this.data.width);
