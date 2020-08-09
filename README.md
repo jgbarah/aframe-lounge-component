@@ -49,4 +49,15 @@ require('aframe-lounge-component');
 ```
 ## Credits
 ### Textures
-* [Floor-lounge texture](https://www.flickr.com/photos/seier/4342331255), by seier+seier in Flickr (license: CC by 2.0).
+
+* [Floor-lounge texture](https://www.flickr.com/photos/seier/4342331255),
+by seier+seier in Flickr (license: CC by 2.0).
+
+![](assets/floor-texture.jpg)
+
+### 360 images
+
+* [360 panorama](https://www.flickr.com/photos/songularity/29966901235/),
+by Erythro Asimov in Flickr (license: CC by-sa 2.0).
+
+![](assets/360-panorama.jpg)

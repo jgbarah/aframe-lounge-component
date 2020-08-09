@@ -290,6 +290,10 @@ AFRAME.registerComponent('lounge', {
     depth: {type: 'number', default: 7},
     floorColor: {type: 'color', default: ''},
     floorTexture: {type: 'asset', default: ''},
+    north: {type: 'string', default: 'wall'},
+    east: {type: 'string', default: 'wall'},
+    south: {type: 'string', default: 'wall'},
+    west: {type: 'string', default: 'wall'},
     wallColor: {type: 'color', default: '#aaa4a4'},
     ceiling: {type: 'boolean', default: true},
     entryPoint: {type: 'vec3', default: {}},
@@ -304,24 +308,32 @@ AFRAME.registerComponent('lounge', {
    * Called once when component is attached. Generally for initial setup.
    */
   init: function () {
+    let data = this.data;
     console.log("lounge component (init)");
     this.lounge = document.createElement('a-entity');
     this.lounge.setAttribute('lounge-floor', {
-      'color': this.data.floorColor,
-      'texture': this.data.floorTexture,
-      'width': this.data.width,
-      'depth': this.data.depth,
-      'position': {x: 0, y: -this.data.height/2, z: 0}
+      'color': data.floorColor,
+      'texture': data.floorTexture,
+      'width': data.width,
+      'depth': data.depth,
+      'position': {x: 0, y: -data.height/2, z: 0}
     });
-    let walls = {
-      'north': {posX: 0, posZ: -this.data.depth/2,
-        width: this.data.width},
-      'east': {posX: this.data.width/2, posZ: 0,
-        width: this.data.depth},
-      'south': {posX: 0, posZ: this.data.depth/2,
-        width: this.data.width},
-      'west': {posX: -this.data.width/2, posZ: 0,
-        width: this.data.depth},
+    let walls = {};
+    if (data.north == 'wall') {
+      walls.north = {posX: 0, posZ: -this.data.depth/2,
+        width: this.data.width};
+    };
+    if (data.east == 'wall') {
+      walls.east = {posX: this.data.width/2, posZ: 0,
+        width: this.data.depth};
+    };
+    if (data.south == 'wall') {
+      walls.south = {posX: 0, posZ: this.data.depth/2,
+        width: this.data.width};
+    };
+    if (data.west == 'wall') {
+      walls.west = {posX: -this.data.width/2, posZ: 0,
+        width: this.data.depth};
     };
     for (const facing in walls) {
       const wall = walls[facing];
