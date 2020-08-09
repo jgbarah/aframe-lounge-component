@@ -1,3 +1,6 @@
+/*
+ * Cypress tests for lounge component
+ */
 describe('Lounge component', () => {
 
   beforeEach(() => {
@@ -24,12 +27,16 @@ describe('Lounge component', () => {
       .should('nested.include',{'width': 7})
       .should('nested.include',{'depth': 7})
   });
+
 });
 
-describe('Lounge component examples', () => {
+describe('Lounge component examples (index)', () => {
+
+  beforeEach(() => {
+    cy.visit('/examples/basic/index.html');
+  });
 
   it('Basic', () => {
-    cy.visit('/examples/basic/index.html');
     assert.exists(cy.get('a-entity[lounge]'));
     assert.exists(cy.get('a-entity[lounge-floor]'));
     assert.exists(cy.get('a-entity[lounge-wall__north]'));
@@ -37,4 +44,32 @@ describe('Lounge component examples', () => {
     assert.exists(cy.get('a-entity[lounge-wall__south]'));
     assert.exists(cy.get('a-entity[lounge-wall__west]'));
   });
+
+  it('Screenshot', () => {
+    cy.wait(1000);
+    cy.screenshot('index');
+  });
+
+});
+
+describe('Lounge component examples (creative)', () => {
+
+  beforeEach(() => {
+    cy.visit('/examples/basic/creative.html');
+  });
+
+  it('Basic', () => {
+    assert.exists(cy.get('a-entity[lounge]'));
+    assert.exists(cy.get('a-entity[lounge-floor]'));
+    assert.exists(cy.get('a-entity[lounge-wall__north]'));
+    assert.exists(cy.get('a-entity[lounge-wall__east]'));
+    assert.exists(cy.get('a-entity[lounge-wall__south]'));
+    assert.exists(cy.get('a-entity[lounge-wall__west]'));
+  });
+
+  it('Screenshot', () => {
+    cy.wait(1000);
+    cy.screenshot('creative');
+  });
+
 });
