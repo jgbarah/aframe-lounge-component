@@ -319,29 +319,35 @@ AFRAME.registerComponent('lounge', {
       'position': {x: 0, y: -data.height/2, z: 0}
     });
     let walls = {};
-    if (data.north == 'wall') {
-      walls.north = {posX: 0, posZ: -this.data.depth/2,
-        width: this.data.width};
+    const directions = {
+      'north': {x: 0, z: -data.depth/2, width: data.width},
+      'east': {x: data.width/2, z: 0, width: data.depth},
+      'south': {x: 0, z: data.depth/2, width: data.width},
+      'west': {x: -data.width/2, z: 0, width: data.depth}
     };
-    if (data.east == 'wall') {
-      walls.east = {posX: this.data.width/2, posZ: 0,
-        width: this.data.depth};
-    };
-    if (data.south == 'wall') {
-      walls.south = {posX: 0, posZ: this.data.depth/2,
-        width: this.data.width};
-    };
-    if (data.west == 'wall') {
-      walls.west = {posX: -this.data.width/2, posZ: 0,
-        width: this.data.depth};
+    for (direction in directions) {
+      wall = {}
+      if (data[direction] == 'wall' || data[direction] == 'barrier') {
+        wall.x = directions[direction].x;
+        wall.z = directions[direction].z;
+        wall.width = directions[direction].width;
+        if (data[direction] == 'wall') {
+          wall.height = data.height;
+          wall.y = 0;
+        } else if (data[direction] == 'barrier') {
+          wall.height = 1.2;
+          wall.y = (wall.height - data.height) / 2;
+        };
+        walls[direction] = wall;
+      };
     };
     for (const facing in walls) {
       const wall = walls[facing];
       this.lounge.setAttribute('lounge-wall__' + facing, {
         'color': this.data.wallColor,
         'width': wall.width,
-        'height': this.data.height,
-        'position': {x: wall.posX, y: 0, z: wall.posZ}
+        'height': wall.height,
+        'position': {x: wall.x, y: wall.y, z: wall.z}
       });
     };
     if (this.data.ceiling) {

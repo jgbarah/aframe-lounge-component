@@ -90,8 +90,29 @@ describe('Lounge component examples (open)', () => {
   });
 
   it('Screenshot', () => {
-    cy.wait(2000);
+    cy.wait(3000);
     cy.screenshot('open');
+  });
+
+});
+
+describe('Lounge component examples (barrier)', () => {
+
+  beforeEach(() => {
+    cy.visit('/examples/basic/barrier.html');
+  });
+
+  it('Basic', () => {
+    assert.exists(cy.get('a-entity[lounge]'));
+    assert.exists(cy.get('a-entity[lounge-floor]'));
+    assert.exists(cy.get('a-entity[lounge-wall__east]'));
+    assert.exists(cy.get('a-entity[lounge-wall__south]'));
+    assert.exists(cy.get('a-entity[lounge-wall__west]'));
+  });
+
+  it('Screenshot', () => {
+    cy.wait(3000);
+    cy.screenshot('barrier');
   });
 
 });
