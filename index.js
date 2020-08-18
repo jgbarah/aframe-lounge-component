@@ -242,7 +242,8 @@ AFRAME.registerComponent('lounge-wall', {
     height: {type: 'number', default: 4},
     depth: {type: 'number', default: .3},
     color: {type: 'color', default: '#aaa4a4'},
-    position: {type: 'vec3', default: {x: 0, y: 0, z: 0}}
+    position: {type: 'vec3', default: {x: 0, y: 0, z: 0}},
+    opacity: {type: 'number', default: 1}
   },
 
   /**
@@ -254,14 +255,18 @@ AFRAME.registerComponent('lounge-wall', {
    * Called once when component is attached. Generally for initial setup.
    */
   init: function () {
+    data = this.data;
     console.log("lounge-wall component (init)");
     this.wall = document.createElement('a-box');
     this.wall.setAttribute('class', 'lounge-wall');
-    this.wall.setAttribute('color', this.data.color);
-    this.wall.setAttribute('width', this.data.width);
-    this.wall.setAttribute('depth', this.data.depth);
-    this.wall.setAttribute('height', this.data.height);
-    this.wall.setAttribute('position', this.data.position);
+    this.wall.setAttribute('color', data.color);
+    this.wall.setAttribute('width', data.width);
+    this.wall.setAttribute('depth', data.depth);
+    this.wall.setAttribute('height', data.height);
+    this.wall.setAttribute('position', data.position);
+    if (data.opacity < 1) {
+      this.wall.setAttribute('material', {transparent: true, opacity: data.opacity});
+    };
     if (this.id == 'north') {
       this.wall.setAttribute('rotation', '0 0 0');
     } else if (this.id == 'east') {
@@ -290,11 +295,16 @@ AFRAME.registerComponent('lounge', {
     depth: {type: 'number', default: 7},
     floorColor: {type: 'color', default: ''},
     floorTexture: {type: 'asset', default: ''},
+    // Walls values: 'wall', 'open', 'barrier', 'glass'
     north: {type: 'string', default: 'wall'},
     east: {type: 'string', default: 'wall'},
     south: {type: 'string', default: 'wall'},
     west: {type: 'string', default: 'wall'},
     wallColor: {type: 'color', default: '#aaa4a4'},
+    // Affects 'barrier' and 'glass'
+    glassOpacity: {type: 'number', default: 0.4},
+    // Affects 'barrier'
+    barrierHeight: {type: 'number', default: 1.4},
     ceiling: {type: 'boolean', default: true},
     entryPoint: {type: 'vec3', default: {}},
   },
@@ -327,16 +337,23 @@ AFRAME.registerComponent('lounge', {
     };
     for (direction in directions) {
       wall = {}
-      if (data[direction] == 'wall' || data[direction] == 'barrier') {
+      if (['wall', 'barrier', 'glass'].includes(data[direction])) {
         wall.x = directions[direction].x;
         wall.z = directions[direction].z;
         wall.width = directions[direction].width;
-        if (data[direction] == 'wall') {
+        if (['wall', 'glass'].includes(data[direction])) {
+          // Full walls
           wall.height = data.height;
           wall.y = 0;
         } else if (data[direction] == 'barrier') {
-          wall.height = 1.2;
+          // Partial wall
+          wall.height = data.barrierHeight;
           wall.y = (wall.height - data.height) / 2;
+        };
+        if (['glass', 'barrier'].includes(data[direction])) {
+          wall.opacity = data.glassOpacity;
+        } else {
+          wall.opacity = 1;
         };
         walls[direction] = wall;
       };
@@ -347,7 +364,8 @@ AFRAME.registerComponent('lounge', {
         'color': this.data.wallColor,
         'width': wall.width,
         'height': wall.height,
-        'position': {x: wall.x, y: wall.y, z: wall.z}
+        'position': {x: wall.x, y: wall.y, z: wall.z},
+        'opacity': wall.opacity
       });
     };
     if (this.data.ceiling) {
@@ -359,6 +377,7 @@ AFRAME.registerComponent('lounge', {
       });
     };
     this.el.appendChild(this.lounge);
+    console.log(this.lounge);
   },
 
   /**
