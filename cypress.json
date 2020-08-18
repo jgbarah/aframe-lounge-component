@@ -2,6 +2,7 @@
   "baseUrl": "https://localhost:5000",
   "integrationFolder": "tests",
   "testFiles": "**/*.js",
+  "video": false,
   "videosFolder": "tests/videos",
   "screenshotsFolder": "tests/screenshots"
 }

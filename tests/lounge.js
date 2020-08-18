@@ -1,6 +1,7 @@
 /*
  * Cypress tests for lounge component
  */
+
 describe('Lounge component', () => {
 
   beforeEach(() => {
@@ -46,33 +47,6 @@ describe('Lounge component examples (index)', () => {
     assert.exists(cy.get('a-entity[lounge-wall__west]'));
   });
 
-  it('Screenshot', () => {
-    cy.wait(1000);
-    cy.screenshot('index');
-  });
-
-});
-
-describe('Lounge component examples (creative)', () => {
-
-  beforeEach(() => {
-    cy.visit('/examples/basic/creative.html');
-  });
-
-  it('Basic', () => {
-    assert.exists(cy.get('a-entity[lounge]'));
-    assert.exists(cy.get('a-entity[lounge-floor]'));
-    assert.exists(cy.get('a-entity[lounge-wall__north]'));
-    assert.exists(cy.get('a-entity[lounge-wall__east]'));
-    assert.exists(cy.get('a-entity[lounge-wall__south]'));
-    assert.exists(cy.get('a-entity[lounge-wall__west]'));
-  });
-
-  it('Screenshot', () => {
-    cy.wait(2000);
-    cy.screenshot('creative');
-  });
-
 });
 
 describe('Lounge component examples (open)', () => {
@@ -87,32 +61,36 @@ describe('Lounge component examples (open)', () => {
     assert.exists(cy.get('a-entity[lounge-wall__east]'));
     assert.exists(cy.get('a-entity[lounge-wall__south]'));
     assert.exists(cy.get('a-entity[lounge-wall__west]'));
-  });
-
-  it('Screenshot', () => {
-    cy.wait(3000);
-    cy.screenshot('open');
+    cy.get('a-entity[lounge-wall__north]').should('not.exist');
   });
 
 });
 
-describe('Lounge component examples (barrier)', () => {
+describe('Several lounge examples (basic)', () => {
 
-  beforeEach(() => {
-    cy.visit('/examples/basic/barrier.html');
+  ['index', 'creative', 'barrier', 'glass'].forEach((example) => {
+    beforeEach(() => {
+      cy.visit('/examples/basic/' + example + '.html');
+    });
+
+    it(`Basic (${example})`, () => {
+      assert.exists(cy.get('a-entity[lounge]'));
+      assert.exists(cy.get('a-entity[lounge-floor]'));
+      assert.exists(cy.get('a-entity[lounge-wall__east]'));
+      assert.exists(cy.get('a-entity[lounge-wall__south]'));
+      assert.exists(cy.get('a-entity[lounge-wall__west]'));
+    });
+
   });
+});
 
-  it('Basic', () => {
-    assert.exists(cy.get('a-entity[lounge]'));
-    assert.exists(cy.get('a-entity[lounge-floor]'));
-    assert.exists(cy.get('a-entity[lounge-wall__east]'));
-    assert.exists(cy.get('a-entity[lounge-wall__south]'));
-    assert.exists(cy.get('a-entity[lounge-wall__west]'));
+describe('Lounge examples (screenshot)', () => {
+
+  ['index', 'creative', 'open', 'barrier', 'glass'].forEach((example) => {
+    it(`Screenshot (${example})`, () => {
+      cy.visit('/examples/basic/' + example + '.html');
+      cy.wait(3000);
+      cy.screenshot(example);
+    });
   });
-
-  it('Screenshot', () => {
-    cy.wait(3000);
-    cy.screenshot('barrier');
-  });
-
 });

@@ -20,28 +20,13 @@ describe('Floor component', () => {
 
 });
 
-describe('Floor component examples (index)', () => {
+describe('Floor component examples (screenshot)', () => {
 
-  beforeEach(() => {
-    cy.visit('/examples/floor/index.html');
+  ['index', 'textured'].forEach((example) => {
+    it(`Screenshot (${example})`, () => {
+      cy.visit('/examples/floor/' + example + '.html');
+      cy.wait(3000);
+      cy.screenshot(example);
+    });
   });
-
-  it('Screenshot', () => {
-    cy.wait(1000);
-    cy.screenshot('index');
-  });
-
-});
-
-describe('Floor component examples (textured)', () => {
-
-  beforeEach(() => {
-    cy.visit('/examples/floor/textured.html');
-  });
-
-  it('Screenshot', () => {
-    cy.wait(1000);
-    cy.screenshot('textured');
-  });
-
 });
