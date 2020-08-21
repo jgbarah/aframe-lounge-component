@@ -5,6 +5,151 @@ if (typeof AFRAME === 'undefined') {
 }
 
 /**
+ * Lounge collider, to detect collisions in the lounge.
+ * Adapted and simplified from
+ * https://github.com/supermedium/superframe/blob/master/components/aabb-collider/index.js
+ */
+AFRAME.registerComponent('lounge-collider', {
+  schema: {
+    interval: {type: 'number', default: 80},
+    objects: {type: 'selectorAll', default: ''}
+  },
+
+  init: function () {
+    this.boundingBox = new THREE.Box3();
+    this.boxCenter = new THREE.Vector3();
+    this.objectEls = [];
+    this.intersectedEls = [];
+    this.previousIntersectedEls = [];
+    this.newIntersectedEls = [];
+    this.clearedIntersectedEls = [];
+    this.prevCheckTime = undefined;
+    this.observer = new MutationObserver(this.setDirty);
+    this.setDirty = this.setDirty.bind(this);
+    this.boxMax = new THREE.Vector3();
+    this.boxMin = new THREE.Vector3();
+  },
+
+  play: function () {
+    this.observer.observe(this.el.sceneEl,
+                          {childList: true, attributes: true, subtree: true});
+    this.el.sceneEl.addEventListener('object3dset', this.setDirty);
+    this.el.sceneEl.addEventListener('object3dremove', this.setDirty);
+  },
+
+  remove: function () {
+    this.observer.disconnect();
+    this.el.sceneEl.removeEventListener('object3dset', this.setDirty);
+    this.el.sceneEl.removeEventListener('object3dremove', this.setDirty);
+  },
+
+  tick: function (time) {
+    const boundingBox = this.boundingBox;
+    const el = this.el;
+    const objectEls = this.objectEls;
+    const intersectedEls = this.intersectedEls;
+    const previousIntersectedEls = this.previousIntersectedEls;
+    const newIntersectedEls = this.newIntersectedEls;
+    const clearedIntersectedEls = this.clearedIntersectedEls;
+    const prevCheckTime = this.prevCheckTime;
+
+    // Only check for intersection if interval time has passed.
+    if (prevCheckTime && (time - prevCheckTime < this.data.interval)) { return; }
+    // Update check time.
+    this.prevCheckTime = time;
+
+    if (this.dirty) { this.refreshObjects(); };
+
+    // Update the bounding box to account for rotations and position changes.
+    boundingBox.setFromObject(el.object3D);
+    this.boxMin.copy(boundingBox.min);
+    this.boxMax.copy(boundingBox.max);
+    boundingBox.getCenter(this.boxCenter);
+
+    // Copy intersectedEls in previousIntersectedEls
+    previousIntersectedEls.length = 0;
+    for (let i = 0; i < intersectedEls.length; i++) {
+      previousIntersectedEls[i] = intersectedEls[i];
+    };
+
+    // Populate intersectedEls array.
+    intersectedEls.length = 0;
+    for (i = 0; i < objectEls.length; i++) {
+      if (objectEls[i] === this.el) { continue; }
+      // Check for intersection.
+      if (this.isIntersecting(objectEls[i])) { intersectedEls.push(objectEls[i]); }
+    };
+
+    // Get newly intersected entities.
+    newIntersectedEls.length = 0;
+    for (i = 0; i < intersectedEls.length; i++) {
+      if (previousIntersectedEls.indexOf(intersectedEls[i]) === -1) {
+        newIntersectedEls.push(intersectedEls[i]);
+      }
+    };
+
+    // Emit cleared events on no longer intersected entities.
+    clearedIntersectedEls.length = 0;
+    for (i = 0; i < previousIntersectedEls.length; i++) {
+      if (intersectedEls.indexOf(previousIntersectedEls[i]) !== -1) { continue; }
+      previousIntersectedEls[i].emit('hitend');
+      clearedIntersectedEls.push(previousIntersectedEls[i]);
+    };
+
+    // Emit events on intersected entities. Do this after the cleared events.
+    for (i = 0; i < newIntersectedEls.length; i++) {
+      if (newIntersectedEls[i] === this.el) { continue; }
+      newIntersectedEls[i].emit('hitstart');
+    };
+  },
+
+  /**
+   * AABB collision detection.
+   * 3D version of https://www.youtube.com/watch?v=ghqD3e37R7E
+   */
+  isIntersecting: (function (el) {
+    let box;
+
+    if (!el.object3D) { return false };
+    if (!el.object3D.aabbBox) {
+      // Box.
+      el.object3D.aabbBox = new THREE.Box3().setFromObject(el.object3D);
+      // Center.
+      el.object3D.boundingBoxCenter = new THREE.Vector3();
+      el.object3D.aabbBox.getCenter(el.object3D.boundingBoxCenter);
+    };
+    box = el.object3D.aabbBox;
+
+    const boxMin = box.min;
+    const boxMax = box.max;
+    return (this.boxMin.x <= boxMax.x && this.boxMax.x >= boxMin.x) &&
+           (this.boxMin.y <= boxMax.y && this.boxMax.y >= boxMin.y) &&
+           (this.boxMin.z <= boxMax.z && this.boxMax.z >= boxMin.z);
+  }),
+
+  /**
+   * Mark the object list as dirty, to be refreshed before next raycast.
+   */
+  setDirty: function () {
+    this.dirty = true;
+  },
+
+  /**
+   * Update list of objects to test for intersection.
+   */
+  refreshObjects: function () {
+    const data = this.data;
+    // If objects not defined, intersect with everything.
+    if (data.objects) {
+      this.objectEls = this.el.sceneEl.querySelectorAll(data.objects);
+    } else {
+      this.objectEls = this.el.sceneEl.children;
+    }
+    this.dirty = false;
+  }
+});
+
+/**
  * Lounge plinth, to set up stuff in the lounge.
  */
 AFRAME.registerComponent('lounge-plinth', {
@@ -243,7 +388,8 @@ AFRAME.registerComponent('lounge-wall', {
     depth: {type: 'number', default: .3},
     color: {type: 'color', default: '#aaa4a4'},
     position: {type: 'vec3', default: {x: 0, y: 0, z: 0}},
-    opacity: {type: 'number', default: 1}
+    opacity: {type: 'number', default: 1},
+    wireframe: {type: 'boolean', default: false}
   },
 
   /**
@@ -259,14 +405,6 @@ AFRAME.registerComponent('lounge-wall', {
     console.log("lounge-wall component (init)");
     this.wall = document.createElement('a-box');
     this.wall.setAttribute('class', 'lounge-wall');
-    this.wall.setAttribute('color', data.color);
-    this.wall.setAttribute('width', data.width);
-    this.wall.setAttribute('depth', data.depth);
-    this.wall.setAttribute('height', data.height);
-    this.wall.setAttribute('position', data.position);
-    if (data.opacity < 1) {
-      this.wall.setAttribute('material', {transparent: true, opacity: data.opacity});
-    };
     if (this.id == 'north') {
       this.wall.setAttribute('rotation', '0 0 0');
     } else if (this.id == 'east') {
@@ -276,10 +414,21 @@ AFRAME.registerComponent('lounge-wall', {
     } else if (this.id == 'west') {
       this.wall.setAttribute('rotation', '0 270 0');
     }
-//    this.floor.setAttribute('static-body', '');
     this.el.appendChild(this.wall);
   },
+
   update: function (oldData) {
+    data = this.data;
+    console.log("lounge-wall component (update)");
+    this.wall.setAttribute('color', data.color);
+    this.wall.setAttribute('width', data.width);
+    this.wall.setAttribute('depth', data.depth);
+    this.wall.setAttribute('height', data.height);
+    this.wall.setAttribute('position', data.position);
+    if (data.opacity < 1) {
+      this.wall.setAttribute('material', {transparent: true, opacity: data.opacity});
+    };
+    this.wall.setAttribute('wireframe', data.wireframe);
   },
 
   remove: function () { }

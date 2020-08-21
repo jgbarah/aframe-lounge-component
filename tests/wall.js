@@ -22,7 +22,7 @@ describe('Wall component', () => {
 
 describe('Wall component examples (screenshot)', () => {
 
-  ['index', 'position', 'opacity'].forEach((example) => {
+  ['index', 'position', 'opacity', 'wireframe'].forEach((example) => {
     it(`Screenshot (${example})`, () => {
       cy.visit('/examples/wall/' + example + '.html');
       cy.wait(3000);
