@@ -47,6 +47,37 @@ Then require and use.
 require('aframe');
 require('aframe-lounge-component');
 ```
+
+## Tests, screenshots, and screencasts
+
+For producing screenshots and running tests, run, in a terminal
+(to launch a web server for serving the examples and tests):
+
+```
+$ npm start
+```
+
+And in another terminal (to actually run the tests):
+
+```
+$ npm run test
+```
+
+This command will also produce screenshots, in `tests/screenshots`
+
+For producing the screencasts (in `cypress/movies`),
+run (while also having the web server running):
+
+```
+$ npx cypress-movie
+```
+
+To produce screencasts for a single test file (`test.js`), run:
+
+```
+$ npx cypress-movie --spec tests/test.js
+```
+
 ## Credits
 ### Textures
 
