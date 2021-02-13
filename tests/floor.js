@@ -22,7 +22,7 @@ describe('Floor component', () => {
 
 describe('Floor component examples (screenshot)', () => {
 
-  ['index', 'textured'].forEach((example) => {
+  ['index', 'textured', 'texturedRepeated'].forEach((example) => {
     it(`Screenshot (${example})`, () => {
       cy.visit('/examples/floor/' + example + '.html');
       cy.wait(3000);

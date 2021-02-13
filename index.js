@@ -306,6 +306,7 @@ AFRAME.registerComponent('lounge-floor', {
     depth: {type: 'number', default: 7},
     color: {type: 'color', default: ''},
     texture: {type: 'asset', default: ''},
+    repeatTexture: {type: 'vec2', default: {x: 1, y: 1}},
     position: {type: 'vec3', default: {x: 0, y: 0, z: 0}}
   },
 
@@ -326,10 +327,11 @@ AFRAME.registerComponent('lounge-floor', {
     };
     this.floor.setAttribute('color', this.data.color);
     this.floor.setAttribute('src', this.data.texture);
+    this.floor.setAttribute('material', {'repeat': this.data.repeatTexture});
     this.floor.setAttribute('width', this.data.width);
     this.floor.setAttribute('height', this.data.depth);
     this.floor.setAttribute('position', this.data.position);
-    this.floor.setAttribute('rotation', '270 0 0');
+    this.floor.setAttribute('rotation', {x: 270, y: 0, z: 0});
     this.floor.setAttribute('side', 'double');
 //    this.floor.setAttribute('static-body', '');
     this.el.appendChild(this.floor);
@@ -444,6 +446,7 @@ AFRAME.registerComponent('lounge', {
     depth: {type: 'number', default: 7},
     floorColor: {type: 'color', default: ''},
     floorTexture: {type: 'asset', default: ''},
+    floorRepeatTexture: {type: 'vec2', default: {x: 1, y: 1}},
     // Walls values: 'wall', 'open', 'barrier', 'glass'
     north: {type: 'string', default: 'wall'},
     east: {type: 'string', default: 'wall'},
@@ -473,6 +476,7 @@ AFRAME.registerComponent('lounge', {
     this.lounge.setAttribute('lounge-floor', {
       'color': data.floorColor,
       'texture': data.floorTexture,
+      'repeatTexture': data.floorRepeatTexture,
       'width': data.width,
       'depth': data.depth,
       'position': {x: 0, y: -data.height/2, z: 0}
