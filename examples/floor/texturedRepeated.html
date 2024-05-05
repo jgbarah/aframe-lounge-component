@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>A-Frame Lounge Component - Floor (texture mode)</title>
     <meta name="description" content="Basic example for Lounge Floor component."></meta>
-    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="../../index.js"></script>
 <!--    <script src="../../dist/aframe-lounge-component.min.js"></script> -->
   </head>
@@ -12,9 +12,12 @@
     <a-scene>
       <a-entity lounge-floor="color: #daf2c1; width: 4"
                 position="-5 0 0"></a-entity>
-      <a-entity lounge-floor="color: #daf2c1; texture: ../../assets/floor-texture.jpg; repeatTexture: 5 7; width: 4"
+      <a-entity lounge-floor="color: #daf2c1;
+                  texture: ../../assets/floor-texture.jpg;
+                  repeat: 5 7; width: 4"
                 position="0 0 0"></a-entity>
-      <a-entity lounge-floor="texture: ../../assets/floor-texture.jpg; repeatTexture: 5 7; width: 4"
+      <a-entity lounge-floor="texture: ../../assets/floor-texture.jpg;
+                  repeat: 5 7; width: 4"
                 position="5 0 0"></a-entity>   
 
       <a-entity position="0 0 4">
