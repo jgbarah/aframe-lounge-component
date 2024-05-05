@@ -276,19 +276,29 @@ AFRAME.registerComponent('lounge-entry-point', {
    * Called once when component is attached. Generally for initial setup.
    */
   init: function () {
+
+    // Set position of entry point, as returned by lounge
+    function set_position(lounge) {
+      console.log("set_position");
+      let point = lounge.components.lounge.entry_point();
+      let pointLocal = el.object3D.worldToLocal(point);
+      el.object3D.position.copy(pointLocal);
+    };
+
     let el = this.el;
     console.log("lounge-entry-point component (init)");
     let lounge = document.getElementById(this.data.loungeId);
     if (lounge == null) {
       lounge = document.querySelector("a-entity[lounge]");
     };
+    // Set a listener just in case lounge is not yet done
     lounge.addEventListener("componentinitialized", function(event) {
+      console.log("lounge-entry-point listener:", event);
       if (event.detail.name == "lounge") {
-        let point = lounge.components.lounge.entry_point();
-        let pointLocal = el.object3D.worldToLocal(point);
-        el.object3D.position.copy(pointLocal);
+        set_position(lounge);
       };
     });
+    set_position(lounge);
   },
 
   update: function (oldData) {
@@ -306,7 +316,7 @@ AFRAME.registerComponent('lounge-floor', {
     depth: {type: 'number', default: 7},
     color: {type: 'color', default: ''},
     texture: {type: 'asset', default: ''},
-    repeatTexture: {type: 'vec2', default: {x: 1, y: 1}},
+    repeat: {type: 'vec2', default: {x: 1, y: 1}},
     position: {type: 'vec3', default: {x: 0, y: 0, z: 0}}
   },
 
@@ -327,7 +337,7 @@ AFRAME.registerComponent('lounge-floor', {
     };
     this.floor.setAttribute('color', this.data.color);
     this.floor.setAttribute('src', this.data.texture);
-    this.floor.setAttribute('material', {'repeat': this.data.repeatTexture});
+    this.floor.setAttribute('material', {'repeat': this.data.repeat});
     this.floor.setAttribute('width', this.data.width);
     this.floor.setAttribute('height', this.data.depth);
     this.floor.setAttribute('position', this.data.position);
@@ -446,7 +456,7 @@ AFRAME.registerComponent('lounge', {
     depth: {type: 'number', default: 7},
     floorColor: {type: 'color', default: ''},
     floorTexture: {type: 'asset', default: ''},
-    floorRepeatTexture: {type: 'vec2', default: {x: 1, y: 1}},
+    floorRepeat: {type: 'vec2', default: {x: 1, y: 1}},
     // Walls values: 'wall', 'open', 'barrier', 'glass'
     north: {type: 'string', default: 'wall'},
     east: {type: 'string', default: 'wall'},
@@ -476,7 +486,7 @@ AFRAME.registerComponent('lounge', {
     this.lounge.setAttribute('lounge-floor', {
       'color': data.floorColor,
       'texture': data.floorTexture,
-      'repeatTexture': data.floorRepeatTexture,
+      'repeat': data.floorRepeat,
       'width': data.width,
       'depth': data.depth,
       'position': {x: 0, y: -data.height/2, z: 0}
@@ -580,7 +590,7 @@ AFRAME.registerComponent('lounge', {
       point = new THREE.Vector3(0, -this.data.height/2, this.data.depth/4);
     } else {
       point = new THREE.Vector3(this.data.entryPoint.x,
-                                this.data.entryPoint.y,
+                                this.data.entryPoint.y - this.data.height/2,
                                 this.data.entryPoint.z);
     };
     this.el.object3D.updateMatrixWorld()

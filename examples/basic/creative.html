@@ -4,12 +4,13 @@
     <meta charset="utf-8">
     <title>A-Frame Lounge Component - Basic</title>
     <meta name="description" content="Basic example for Lounge component."></meta>
-    <script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="../../index.js"></script>
 <!--    <script src="../../dist/aframe-lounge-component.min.js"></script> -->
   </head>
   <body>
-    <a-scene antialias: true; logarithmicDepthBuffer: true; colorManagement: true; sortObjects: true;>
+    <a-scene antialias: true; logarithmicDepthBuffer: true;
+        colorManagement: true; sortObjects: true;>
       <a-entity id="lounge" position="5 0 0"
                 lounge="width: 20; depth: 30; height: 10; ceiling: false;
                         floorTexture: ../../assets/floor-texture.jpg">
@@ -34,7 +35,7 @@
       </a-entity>
 
       <a-entity lounge-entry-point>
-        <a-entity camera position="0 1.8 0" look-controls
+        <a-entity camera position="0 1.6 0" look-controls
                   wasd-controls="fly: false">
         </a-entity>
       </a-entity>
